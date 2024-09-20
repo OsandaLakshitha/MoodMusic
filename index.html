@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood-Based Playlist Generator</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            max-width: 1000px; /* Wider max width */
+            width: 95%; /* Wider width */
+            z-index: 1;
+            animation: fadeIn 1s ease-in-out;
+            text-align: center; /* Center text inside container */
+            margin: 0 auto; /* Center the container */
+        }
+
+
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #ffcc00;
+        }
+
+        select, button {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .playlist {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center; /* Center playlists */
+            flex-direction: column; /* Stack vertically */
+        }
+
+        .playlist-layout {
+            display: flex;
+            justify-content: space-between; /* Keep items side by side */
+            width: 100%;
+        }
+
+        .link-section {
+            width: 48%; /* Maintain width for side by side layout */
+            text-align: left;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: rgba(118, 117, 117, 0.5);
+            transition: transform 0.3s;
+        }
+
+        .link-section:hover {
+            transform: scale(1.02);
+        }
+
+        .link-section h3 {
+            margin-top: 0;
+            color: #000000;
+        }
+
+        .link-section a {
+            display: block;
+            margin: 10px 0;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #007bff;
+            transition: background-color 0.3s;
+        }
+
+        .link-section a:hover {
+            background-color: #0056b3;
+        }
+
+        .song {
+            margin: 10px 0;
+        }
+
+        .artist {
+            font-size: 0.9em;
+            color: #fcdada;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 0.8em;
+            text-align: center;
+            z-index: 1;
+        }
+
+        @media (max-width: 600px) {
+            .playlist-layout {
+                flex-direction: column; /* Stack vertically on small screens */
+            }
+
+            .link-section {
+                width: 100%; /* Full width on small screens */
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop>
+        <source src="background/background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="container">
+        <h1>Mood Music</h1>
+        <h2>Find Your Mood, Feel the Beat!</h2>
+        <label for="moodSelect">Select your mood:</label>
+        <select id="moodSelect">
+            <option value="">--Choose a mood--</option>
+            <option value="happy">Happy</option>
+            <option value="sad">Sad</option>
+            <option value="energetic">Energetic</option>
+            <option value="relaxed">Relaxed</option>
+            <option value="romantic">Romantic</option>
+            <option value="RelaxedSinhala">Relaxed - Sinhala</option>
+        </select>
+        <button id="generateButton">Generate Playlist</button>
+        <div id="playlist" class="playlist"></div>
+    </div>
+
+    <footer>
+        <p>All rights reserved | Powered by Garfield Kammali Projects</p>
+    </footer>
+
+    <script>
+        const playlists = {
+            happy: {
+                groups: [
+                    {
+                        youtube: [
+                            { song: "Unstoppable", artist: "Mandrazo & Bianca" },
+                            { song: "Love Me Like You Do", artist: "Pop Mage" },
+                            { song: "Dance Monkey", artist: "Pop Mage" }
+                        ],
+                        spotify: [
+                            { song: "Si Antes Te Hubiera Conocido", artist: "KAROL G" },
+                            { song: "Beautiful Things", artist: "Benson Boone" },
+                            { song: "UWAIE", artist: "Kapo" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/watch?v=6aglDzW8SCY",
+                        spotifyLink: "https://open.spotify.com/playlist/37i9dQZF1EVJSvZp5AOML2"
+                    },
+                    {
+                        youtube: [
+                            { song: "Shape Of You", artist: "Ed Sheeran" },
+                            { song: "Sugar", artist: "Maroon 5" },
+                            { song: "Counting Stars", artist: "OneRepublic" }
+                        ],
+                        spotify: [
+                            { song: "Taste", artist: "Subrina Carpenter" },
+                            { song: "Birds of a Feather", artist: "Billie Eilish" },
+                            { song: "Alibi", artist: "Sevdaliza, Pabllo Vittar, Yseult" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/playlist?list=PLAQ7nLSEnhWTEihjeM1I-ToPDJEKfZHZu",
+                        spotifyLink: "https://open.spotify.com/playlist/5z5kiTiHO85L6ERjm32jQ7"
+                    }
+                ]
+            },
+            RelaxedSinhala: {
+                groups: [
+                    {
+                        youtube: [
+                            { song: "Numba Ha", artist: "DILU Beats" },
+                            { song: "Kohe Ho Ma", artist: "BHASHI" },
+                            { song: "SHOBA", artist: "BHASHI" }
+                        ],
+                        spotify: [
+                            { song: "Numba Ha", artist: "DILU Beats" },
+                            { song: "Kohe Ho Ma", artist: "BHASHI" },
+                            { song: "SHOBA", artist: "BHASHI" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/watch?v=6aglDzW8SCY",
+                        spotifyLink: "https://open.spotify.com/playlist/7o8RMosmbiSLikLgeIxiQU"
+                    },
+                    {
+                        youtube: [
+                            { song: "Kari Na Sada", artist: "Methun SK" },
+                            { song: "Sansarini", artist: "Yasas Madagedara" },
+                            { song: "Allan Yanna Bari Athak", artist: "Sudeera Dilshan" }
+                        ],
+                        spotify: [
+                            { song: "Kari Na Sada", artist: "Methun SK" },
+                            { song: "Sansarini", artist: "Yasas Madagedara" },
+                            { song: "Allan Yanna Bari Athak", artist: "Sudeera Dilshan" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/playlist?list=PLAQ7nLSEnhWTEihjeM1I-ToPDJEKfZHZu",
+                        spotifyLink: "https://open.spotify.com/playlist/6ZKEOQoMoEO2BLgJgYK2vi"
+                    }
+                ]
+            },
+            sad: {
+                groups: [
+                    {
+                        youtube: [
+                            { song: "Love Is Gone", artist: "Zelli King" },
+                            { song: "Bad Liar", artist: "Simon Erics" },
+                            { song: "Remember", artist: "Beck" }
+                        ],
+                        spotify: [
+                            { song: "Everything I Wanted", artist: "Billie Eilish" },
+                            { song: "Remember", artist: "Beck" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/watch?v=XqYTfpxFuDM&pp=ygUJc2FkIHNvbmdz",
+                        spotifyLink: "https://open.spotify.com/playlist/37i9dQZF1DX7qK8ma5wgG1"
+                    },
+                    {
+                        youtube: [
+                            { song: "A Thousand Years", artist: "Honeyfox" },
+                            { song: "Apologize", artist: "Michelle Ray" },
+                            { song: "Senorita", artist: "lost" }
+                        ],
+                        spotify: [
+                            { song: "In The Stars", artist: "Benson Boone" },
+                            { song: "Someone You Loved", artist: "Lewis Capaldi" },
+                            { song: "Let Me Down Slowly", artist: "Alec Benjamin" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/watch?v=anPvA1o9M0Y",
+                        spotifyLink: "https://open.spotify.com/playlist/4bRQf8bwAIVgCb6Lcoursx"
+                    }
+                ]
+            },
+            energetic: {
+                groups: [
+                    {
+                        youtube: [
+                            { song: "Lost Sky", artist: "Fearless pt.II (ft. Chris Linton)" },
+                            { song: "Royalty", artist: "Egzod, Maestro Chives, Neoni" },
+                            { song: "Die For You", artist: "Prokyon & Sergio Ochoa" }
+                        ],
+                        spotify: [
+                            { song: "Army", artist: "Besomorph" },
+                            { song: "Die For You", artist: "Grabbitz" },
+                            { song: "Enemy", artist: "Tommee Profitt" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/watch?v=LfPPvyk72Kk",
+                        spotifyLink: "https://open.spotify.com/playlist/17YDNvzdUBHlcsxMeUpA4E"
+                    },
+                    {
+                        youtube: [
+                            { song: "Six Feet Deep", artist: "Besomorph" },
+                            { song: "The Revolution", artist: "Egzod & Neon" },
+                            { song: "Ghost Town", artist: "Layto x Neoni" }
+                        ],
+                        spotify: [
+                            { song: "Kosandra - Remix", artist: "Maikkis" },
+                            { song: "Legends Never Die", artist: "League of Legends" },
+                            { song: "Bad Boy (feat. Luana Kiara)", artist: "Raaban" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/watch?v=nQI2bMhcV38",
+                        spotifyLink: "https://open.spotify.com/playlist/3XQ85blIpls4b6mq3LJDuF"
+                    }
+                ]
+            },
+            relaxed: {
+                groups: [
+                    {
+                        youtube: [
+                            { song: "Relaxing Sleep Music + Insomnia", artist: "The Soul of Wind" }
+                        ],
+                        spotify: [
+                            { song: "Relaxing Sleep Music", artist: "Pryve" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/watch?v=bP9gMpl1gyQ",
+                        spotifyLink: "https://open.spotify.com/playlist/1r4hnyOWexSvylLokn2hUa"
+                    }
+                ]
+            },
+            romantic: {
+                groups: [
+                    {
+                        youtube: [
+                            { song: "Take Me to Your Heart", artist: "" },
+                            { song: "Stuck On You", artist: "" },
+                            { song: "Exchange of Hearts", artist: "" }
+                        ],
+                        spotify: [
+                            { song: "When I Was Your Man", artist: "Bruno Mars" },
+                            { song: "Photograph", artist: "Ed Sheeran" },
+                            { song: "Fix You", artist: "Coldplay" }
+                        ],
+                        youtubeLink: "https://www.youtube.com/watch?v=4rbbefyNu2g",
+                        spotifyLink: "https://open.spotify.com/playlist/37i9dQZF1DX50QitC6Oqtn"
+                    }
+                ]
+            }
+        };
+
+        document.getElementById("generateButton").addEventListener("click", function() {
+            const mood = document.getElementById("moodSelect").value;
+            const playlistDiv = document.getElementById("playlist");
+            playlistDiv.innerHTML = "<p>Loading...</p>"; // Show loading text
+
+            if (mood) {
+                const selectedGroups = playlists[mood].groups;
+                const randomGroupIndex = Math.floor(Math.random() * selectedGroups.length);
+                const selectedGroup = selectedGroups[randomGroupIndex];
+
+                setTimeout(() => { // Simulate loading time
+                    playlistDiv.innerHTML = `
+                        <div class="playlist-layout">
+                            <div class="link-section">
+                                <h3>YouTube</h3>
+                                ${selectedGroup.youtube.map(song => `
+                                    <div class="song">
+                                        <strong>${song.song}</strong>
+                                        <div class="artist">${song.artist}</div>
+                                    </div>`).join('')}
+                                <a href="${selectedGroup.youtubeLink}" target="_blank">Listen on YouTube</a>
+                            </div>
+                            <div class="link-section">
+                                <h3>Spotify</h3>
+                                ${selectedGroup.spotify.map(song => `
+                                    <div class="song">
+                                        <strong>${song.song}</strong>
+                                        <div class="artist">${song.artist}</div>
+                                    </div>`).join('')}
+                                <a href="${selectedGroup.spotifyLink}" target="_blank">Listen on Spotify</a>
+                            </div>
+                        </div>
+                    `;
+                }, 1000); // Simulated loading time of 1 second
+            } else {
+                playlistDiv.innerHTML = "<p>Please select a mood.</p>";
+            }
+        });
+    </script>
+</body>
+</html>
